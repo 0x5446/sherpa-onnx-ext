@@ -1,3 +1,9 @@
+### 2025-03-24
+1. For CTC speech recognition models (e.g., SenseVoice): Expose log_probs and avg_logprob, which represent the recognition confidence at the token level and for the entire sentence.
+2. For the Speaker Embedding Manager, added new methods: search_with_score and verify_with_score, exposing the score (voiceprint similarity result).
+3. Adjusted the VAD forward traceback time coefficient to address the issue of missing audio at the beginning, which caused ASR recognition failures.
+
+
 ### Supported functions
 
 |Speech recognition| Speech synthesis |
