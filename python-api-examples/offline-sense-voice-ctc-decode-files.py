@@ -22,9 +22,9 @@ import soundfile as sf
 
 
 def create_recognizer():
-    model = "./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/model.onnx"
-    tokens = "./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/tokens.txt"
-    test_wav = "./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/test_wavs/zh.wav"
+    model = "../sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/model.onnx"
+    tokens = "../sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/tokens.txt"
+    test_wav = "../sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/test_wavs/zh.wav"
     #  test_wav = "./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/test_wavs/en.wav"
     #  test_wav = "./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/test_wavs/ja.wav"
     #  test_wav = "./sherpa-onnx-sense-voice-zh-en-ja-ko-yue-2024-07-17/test_wavs/ko.wav"
@@ -40,6 +40,7 @@ def create_recognizer():
         sherpa_onnx.OfflineRecognizer.from_sense_voice(
             model=model,
             tokens=tokens,
+            provider="cuda",
             use_itn=True,
             debug=True,
         ),

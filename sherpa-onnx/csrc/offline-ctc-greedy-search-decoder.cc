@@ -12,6 +12,7 @@
 
 namespace sherpa_onnx {
 
+/// modified by tf @2025-03-24
 std::vector<OfflineCtcDecoderResult> OfflineCtcGreedySearchDecoder::Decode(
     Ort::Value log_probs, Ort::Value log_probs_length) {
   std::vector<int64_t> shape = log_probs.GetTensorTypeAndShapeInfo().GetShape();
@@ -29,22 +30,43 @@ std::vector<OfflineCtcDecoderResult> OfflineCtcGreedySearchDecoder::Decode(
         log_probs.GetTensorData<float>() + b * num_frames * vocab_size;
 
     OfflineCtcDecoderResult r;
+    r.avg_logprob = 0.0f;
     int64_t prev_id = -1;
 
     for (int32_t t = 0; t != static_cast<int32_t>(p_log_probs_length[b]); ++t) {
-      auto y = static_cast<int64_t>(std::distance(
-          static_cast<const float *>(p_log_probs),
-          std::max_element(
-              static_cast<const float *>(p_log_probs),
-              static_cast<const float *>(p_log_probs) + vocab_size)));
-      p_log_probs += vocab_size;
-
+      // the start position of the logits of the current time step
+      const float *current_logits = p_log_probs;
+      
+      // find the maximum value and its index
+      auto max_elem = std::max_element(current_logits, current_logits + vocab_size);
+      auto y = static_cast<int64_t>(std::distance(current_logits, max_elem));
+      float max_val = *max_elem;
+      
       if (y != blank_id_ && y != prev_id) {
+        // step 1: calculate sum_exp = sum(exp(x_i - max_val)) to prevent overflow
+        float sum_exp = 0.0f;
+        for (int32_t i = 0; i < vocab_size; ++i) {
+          sum_exp += std::exp(current_logits[i] - max_val);
+        }
+        
+        // step 2: log_softmax(x_i) = x_i - max_val - log(sum_exp)
+        float log_prob_value = current_logits[y] - max_val - std::log(sum_exp);
+        
         r.tokens.push_back(y);
         r.timestamps.push_back(t);
+        r.log_probs.push_back(log_prob_value);
+        r.avg_logprob += log_prob_value;
       }
+      
+      // move to the next frame
+      p_log_probs += vocab_size;
       prev_id = y;
     }  // for (int32_t t = 0; ...)
+
+    // average log probability
+    if (!r.log_probs.empty()) {
+      r.avg_logprob /= r.log_probs.size();
+    }
 
     ans.push_back(std::move(r));
   }

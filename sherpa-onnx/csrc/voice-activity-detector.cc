@@ -79,7 +79,9 @@ class VoiceActivityDetector::Impl {
     if (is_speech) {
       if (start_ == -1) {
         // beginning of speech
-        start_ = std::max(buffer_.Tail() - 2 * model_->WindowSize() -
+        /// modified by tf @2025-03-24
+        /// 2 * window_size -> 8 * window_size
+        start_ = std::max(buffer_.Tail() - 8 * model_->WindowSize() -
                               model_->MinSpeechDurationSamples(),
                           buffer_.Head());
       }
@@ -101,6 +103,8 @@ class VoiceActivityDetector::Impl {
       }
 
       if (start_ == -1) {
+        /// modified by tf @2025-03-24
+        /// 8 * window_size -> 2 * window_size
         int32_t end = buffer_.Tail() - 2 * model_->WindowSize() -
                       model_->MinSpeechDurationSamples();
         int32_t n = std::max(0, end - buffer_.Head());

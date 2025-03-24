@@ -26,6 +26,16 @@ struct OfflineCtcDecoderResult {
   ///
   /// tokens.size() == timestamps.size()
   std::vector<int32_t> timestamps;
+
+
+  /// added by tf @2025-03-24 BOF
+  /// log_probs[i] contains the log probability of tokens[i] at
+  /// timestamps[i]
+  std::vector<float> log_probs;
+
+  /// avg_logprob: the average log probability of the decoded tokens
+  float avg_logprob;
+  /// added by tf @2025-03-24 EOF
 };
 
 class OfflineCtcDecoder {

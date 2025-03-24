@@ -358,7 +358,11 @@ const ContextGraphPtr &OfflineStream::GetContextGraph() const {
 const OfflineRecognitionResult &OfflineStream::GetResult() const {
   return impl_->GetResult();
 }
+
+/// modified by tf @2025-03-24
+/// add log_probs and avg_logprob
 std::string OfflineRecognitionResult::AsJsonString() const {
+
   std::ostringstream os;
   os << "{";
 
@@ -425,8 +429,25 @@ std::string OfflineRecognitionResult::AsJsonString() const {
     os << sep << w;
     sep = ", ";
   }
+  os << "], ";
 
-  os << "]";
+  sep = "";
+
+  os << "\""
+     << "log_probs"
+     << "\""
+     << ": ";
+  os << "[";
+  for (float prob : log_probs) {
+    os << sep << std::fixed << std::setprecision(6) << prob;
+    sep = ", ";
+  }
+  os << "], ";
+
+  os << "\"avg_logprob\""
+     << ": ";
+  os << std::fixed << std::setprecision(6) << avg_logprob;
+
   os << "}";
 
   return os.str();

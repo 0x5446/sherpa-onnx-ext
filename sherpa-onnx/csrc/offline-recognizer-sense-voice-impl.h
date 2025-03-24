@@ -45,6 +45,11 @@ static OfflineRecognitionResult ConvertSenseVoiceResult(
     r.timestamps.push_back(time);
   }
 
+  /// added by tf @2025-03-24 BOF
+  r.log_probs = src.log_probs;
+  r.avg_logprob = src.avg_logprob;
+  /// added by tf @2025-03-24 EOF
+
   r.words = std::move(src.words);
 
   // parse lang, emotion and event from tokens.

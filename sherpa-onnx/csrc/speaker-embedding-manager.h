@@ -14,6 +14,11 @@ struct SpeakerMatch {
   float score;
 };
 
+struct VerificationResult {
+  bool match;    // 是否匹配
+  float score;   // 相似度分数
+};
+
 namespace sherpa_onnx {
 
 class SpeakerEmbeddingManager {
@@ -67,6 +72,18 @@ class SpeakerEmbeddingManager {
    */
   std::string Search(const float *p, float threshold) const;
 
+  /** It is for speaker identification with score.
+   *
+   * Similar to Search, but returns a SpeakerMatch structure containing
+   * both the name and the score.
+   *
+   * @param p The input embedding.
+   * @param threshold A value between 0 and 1.
+   * @param If found, return the name and score of the speaker. Otherwise,
+   *        return an empty name and the score.
+   */
+  SpeakerMatch SearchWithScore(const float *p, float threshold) const;
+
   /**
    * It is for speaker identification.
    *
@@ -97,6 +114,18 @@ class SpeakerEmbeddingManager {
    * @return Return true if it matches. Otherwise, it returns false.
    */
   bool Verify(const std::string &name, const float *p, float threshold) const;
+
+  /* Check whether the input embedding matches the embedding of the input
+   * speaker and return score.
+   *
+   * It is for speaker verification with score information.
+   *
+   * @param name The target speaker name.
+   * @param p The input embedding to check.
+   * @param threshold A value between 0 and 1.
+   * @return Return a VerificationResult with match status and score.
+   */
+  VerificationResult VerifyWithScore(const std::string &name, const float *p, float threshold) const;
 
   float Score(const std::string &name, const float *p) const;
 

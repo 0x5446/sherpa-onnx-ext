@@ -40,6 +40,11 @@ struct OfflineRecognitionResult {
 
   std::vector<int32_t> words;
 
+  /// added by tf @2025-03-24 BOF
+  std::vector<float> log_probs;
+  float avg_logprob;
+  /// added by tf @2025-03-24 EOF
+
   std::string AsJsonString() const;
 };
 

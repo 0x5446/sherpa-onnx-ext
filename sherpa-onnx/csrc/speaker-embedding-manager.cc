@@ -112,9 +112,16 @@ class SpeakerEmbeddingManager::Impl {
     return true;
   }
 
+  /// modified by tf @2025-03-24
   std::string Search(const float *p, float threshold) {
+    SpeakerMatch result = SearchWithScore(p, threshold);
+    return result.name;
+  }
+
+  /// added by tf @2025-03-24
+  SpeakerMatch SearchWithScore(const float *p, float threshold) {
     if (embedding_matrix_.rows() == 0) {
-      return {};
+      return {"", -1.0f};
     }
 
     Eigen::VectorXf v =
@@ -126,10 +133,10 @@ class SpeakerEmbeddingManager::Impl {
     Eigen::VectorXf::Index max_index = 0;
     float max_score = scores.maxCoeff(&max_index);
     if (max_score < threshold) {
-      return {};
+      return {"", max_score};
     }
 
-    return row2name_.at(max_index);
+    return {row2name_.at(max_index), max_score};
   }
 
   std::vector<SpeakerMatch> GetBestMatches(const float *p, float threshold,
@@ -166,9 +173,16 @@ class SpeakerEmbeddingManager::Impl {
     return matches;
   }
 
+  /// modified by tf @2025-03-24
   bool Verify(const std::string &name, const float *p, float threshold) {
+    VerificationResult result = VerifyWithScore(name, p, threshold);
+    return result.match;
+  }
+
+  /// added by tf @2025-03-24
+  VerificationResult VerifyWithScore(const std::string &name, const float *p, float threshold) {
     if (!name2row_.count(name)) {
-      return false;
+      return {false, 0.0f};
     }
 
     int32_t row_idx = name2row_.at(name);
@@ -179,11 +193,7 @@ class SpeakerEmbeddingManager::Impl {
 
     float score = embedding_matrix_.row(row_idx) * v;
 
-    if (score < threshold) {
-      return false;
-    }
-
-    return true;
+    return {score >= threshold, score};
   }
 
   float Score(const std::string &name, const float *p) {
@@ -250,8 +260,14 @@ bool SpeakerEmbeddingManager::Remove(const std::string &name) const {
 }
 
 std::string SpeakerEmbeddingManager::Search(const float *p,
-                                            float threshold) const {
+                                           float threshold) const {
   return impl_->Search(p, threshold);
+}
+
+/// added by tf @2025-03-24
+SpeakerMatch SpeakerEmbeddingManager::SearchWithScore(const float *p,
+                                                     float threshold) const {
+  return impl_->SearchWithScore(p, threshold);
 }
 
 std::vector<SpeakerMatch> SpeakerEmbeddingManager::GetBestMatches(
@@ -259,9 +275,17 @@ std::vector<SpeakerMatch> SpeakerEmbeddingManager::GetBestMatches(
   return impl_->GetBestMatches(p, threshold, n);
 }
 
-bool SpeakerEmbeddingManager::Verify(const std::string &name, const float *p,
+bool SpeakerEmbeddingManager::Verify(const std::string &name, 
+                                     const float *p, 
                                      float threshold) const {
   return impl_->Verify(name, p, threshold);
+}
+
+/// added by tf @2025-03-24
+VerificationResult SpeakerEmbeddingManager::VerifyWithScore(const std::string &name, 
+                                                           const float *p, 
+                                                           float threshold) const {
+  return impl_->VerifyWithScore(name, p, threshold);
 }
 
 float SpeakerEmbeddingManager::Score(const std::string &name,
