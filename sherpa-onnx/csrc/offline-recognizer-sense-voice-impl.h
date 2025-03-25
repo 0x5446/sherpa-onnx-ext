@@ -28,6 +28,7 @@ static OfflineRecognitionResult ConvertSenseVoiceResult(
   r.tokens.reserve(src.tokens.size());
   r.timestamps.reserve(src.timestamps.size());
   r.log_probs.reserve(src.log_probs.size()); /// added by tf @2025-03-25
+  r.avg_logprob = 0.0f; /// added by tf @2025-03-25
 
   std::string text;
 
