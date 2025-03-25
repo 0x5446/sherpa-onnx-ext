@@ -13,6 +13,7 @@
 namespace sherpa_onnx {
 
 /// modified by tf @2025-03-24
+/// modified by tf @2025-03-25: remove avg_logprob
 std::vector<OfflineCtcDecoderResult> OfflineCtcGreedySearchDecoder::Decode(
     Ort::Value log_probs, Ort::Value log_probs_length) {
   std::vector<int64_t> shape = log_probs.GetTensorTypeAndShapeInfo().GetShape();
@@ -30,7 +31,6 @@ std::vector<OfflineCtcDecoderResult> OfflineCtcGreedySearchDecoder::Decode(
         log_probs.GetTensorData<float>() + b * num_frames * vocab_size;
 
     OfflineCtcDecoderResult r;
-    r.avg_logprob = 0.0f;
     int64_t prev_id = -1;
 
     for (int32_t t = 0; t != static_cast<int32_t>(p_log_probs_length[b]); ++t) {
@@ -55,18 +55,12 @@ std::vector<OfflineCtcDecoderResult> OfflineCtcGreedySearchDecoder::Decode(
         r.tokens.push_back(y);
         r.timestamps.push_back(t);
         r.log_probs.push_back(log_prob_value);
-        r.avg_logprob += log_prob_value;
       }
       
       // move to the next frame
       p_log_probs += vocab_size;
       prev_id = y;
     }  // for (int32_t t = 0; ...)
-
-    // average log probability
-    if (!r.log_probs.empty()) {
-      r.avg_logprob /= r.log_probs.size();
-    }
 
     ans.push_back(std::move(r));
   }

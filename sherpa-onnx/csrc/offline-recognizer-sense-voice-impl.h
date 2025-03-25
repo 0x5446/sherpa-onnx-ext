@@ -27,6 +27,7 @@ static OfflineRecognitionResult ConvertSenseVoiceResult(
   OfflineRecognitionResult r;
   r.tokens.reserve(src.tokens.size());
   r.timestamps.reserve(src.timestamps.size());
+  r.log_probs.reserve(src.log_probs.size()); /// added by tf @2025-03-25
 
   std::string text;
 
@@ -45,10 +46,13 @@ static OfflineRecognitionResult ConvertSenseVoiceResult(
     r.timestamps.push_back(time);
   }
 
-  /// added by tf @2025-03-24 BOF
-  r.log_probs = src.log_probs;
-  r.avg_logprob = src.avg_logprob;
-  /// added by tf @2025-03-24 EOF
+  /// modified by tf @2025-03-25 BOF
+  for (int32_t i = 4; i < src.timestamps.size(); ++i) {
+    r.log_probs.push_back(src.log_probs[i]);
+    r.avg_logprob += src.log_probs[i];
+  }
+  r.avg_logprob /= r.log_probs.size();
+  /// modified by tf @2025-03-25 EOF
 
   r.words = std::move(src.words);
 

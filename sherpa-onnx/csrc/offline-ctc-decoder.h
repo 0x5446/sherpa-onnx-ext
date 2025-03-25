@@ -34,7 +34,7 @@ struct OfflineCtcDecoderResult {
   std::vector<float> log_probs;
 
   /// avg_logprob: the average log probability of the decoded tokens
-  float avg_logprob;
+  // float avg_logprob; // modified by tf @2025-03-25: remove it
   /// added by tf @2025-03-24 EOF
 };
 
