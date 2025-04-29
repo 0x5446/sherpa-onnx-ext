@@ -5,14 +5,15 @@ if [ -z "$WORKDIR" ]; then
     exit 1
 fi
 
-if [ ! -f onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz ] && [ ! -d onnxruntime-linux-x64-gpu-1.18.0 ]; then
-    wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz
+
+if [ ! -f $WORKDIR/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz ] && [ ! -d $WORKDIR/onnxruntime-linux-x64-gpu-1.18.0 ]; then
+    wget https://github.com/microsoft/onnxruntime/releases/download/v1.18.0/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz -P $WORKDIR
 fi
-if [ ! -d onnxruntime-linux-x64-gpu-1.18.0 ] && [ -f onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz ]; then
-    tar xvf onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz
-    rm onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz
+if [ ! -d $WORKDIR/onnxruntime-linux-x64-gpu-1.18.0 ] && [ -f $WORKDIR/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz ]; then
+    tar xvf $WORKDIR/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz
+    rm $WORKDIR/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz
 fi
-ln -sf /$WORKDIR/onnxruntime-linux-x64-gpu-1.18.0/lib/libonnxruntime*.so* /usr/local/lib/ && \
+ln -sf $WORKDIR/onnxruntime-linux-x64-gpu-1.18.0/lib/libonnxruntime*.so* /usr/local/lib/ && \
 ldconfig
     
 cd $WORKDIR/sherpa-onnx-ext && \

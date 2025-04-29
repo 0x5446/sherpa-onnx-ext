@@ -52,3 +52,4 @@ from .keyword_spotter import KeywordSpotter
 from .offline_recognizer import OfflineRecognizer
 from .online_recognizer import OnlineRecognizer
 from .utils import text2token
+__version__ = '1.11.2+cuda'
