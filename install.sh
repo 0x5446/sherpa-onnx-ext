@@ -13,8 +13,8 @@ if [ ! -d $WORKDIR/onnxruntime-linux-x64-gpu-1.18.0 ] && [ -f $WORKDIR/onnxrunti
     tar xvf $WORKDIR/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz
     rm $WORKDIR/onnxruntime-linux-x64-gpu-cuda12-1.18.0.tgz
 fi
-ln -sf $WORKDIR/onnxruntime-linux-x64-gpu-1.18.0/lib/libonnxruntime*.so* /usr/local/lib/ && \
-ldconfig
+sudo ln -sf $WORKDIR/onnxruntime-linux-x64-gpu-1.18.0/lib/libonnxruntime*.so* /usr/local/lib/ && \
+sudo ldconfig
     
 cd $WORKDIR/sherpa-onnx-ext && \
     export SHERPA_ONNX_CMAKE_ARGS="-DSHERPA_ONNX_ENABLE_GPU=ON" && \
