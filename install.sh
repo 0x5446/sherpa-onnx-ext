@@ -4,7 +4,7 @@ if [ -z "$WORKDIR" ]; then
     echo "Usage: $0 <WORKDIR>"
     exit 1
 fi
-cd sherpa-onnx-ext && \
+cd $WORKDIR/sherpa-onnx-ext && \
     export SHERPA_ONNX_CMAKE_ARGS="-DSHERPA_ONNX_ENABLE_GPU=ON" && \
     export SHERPA_ONNXRUNTIME_LIB_DIR=/$WORKDIR/onnxruntime-linux-x64-gpu-1.18.0/lib && \
     export SHERPA_ONNXRUNTIME_INCLUDE_DIR=/$WORKDIR/onnxruntime-linux-x64-gpu-1.18.0/include && \
