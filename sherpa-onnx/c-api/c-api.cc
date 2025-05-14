@@ -615,6 +615,13 @@ const SherpaOnnxOfflineRecognizerResult *SherpaOnnxGetOfflineStreamResult(
   pJson[json.size()] = 0;
   r->json = pJson;
 
+  // add by tf@20250513 BOF
+  // copy log_probs, avg_logprob
+  r->log_probs = new float[result.log_probs.size()];
+  std::copy(result.log_probs.begin(), result.log_probs.end(), r->log_probs);
+  r->avg_logprob = result.avg_logprob;
+  // add by tf@20250513 EOF
+
   // copy tokens
   auto count = result.tokens.size();
   if (count > 0) {
@@ -651,6 +658,8 @@ const SherpaOnnxOfflineRecognizerResult *SherpaOnnxGetOfflineStreamResult(
     r->timestamps = nullptr;
     r->tokens = nullptr;
     r->tokens_arr = nullptr;
+    r->log_probs = nullptr;
+    r->avg_logprob = 0;
   }
 
   return r;
@@ -667,6 +676,9 @@ void SherpaOnnxDestroyOfflineRecognizerResult(
     delete[] r->lang;
     delete[] r->emotion;
     delete[] r->event;
+    // add by tf@20250514 BOF
+    delete[] r->log_probs;
+    // add by tf@20250514 EOF
     delete r;
   }
 }
